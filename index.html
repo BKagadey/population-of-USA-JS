@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link href="style.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+   
+    <form class="search-form">
+        <label for="search">Population of</label>
+        <input type="text" class="search" placeholder="City or State" id="search">
+        <ul class="suggestions">
+            <li>Filter for USA city</li>
+            <li>or USA state</li>
+        </ul>
+  </form>
+  
+  <script>
+    const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+    
+    const cities = [];
+    
+    fetch(endpoint)
+        .then(blob => blob.json())
+        .then(data => cities.push(...data));
+      
+    function findMathces(wordToMAtch, cities){
+        return cities.filter(place => {
+            
+            const regex = new RegExp(wordToMAtch,'gi');
+            return place.city.match(regex) || place.state.match(regex)
+        });
+        
+     }
+      
+      function numberWithCommsas(x) {
+          return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      }
+      
+      function displayMAtches(){
+          const matchArray = findMathces(this.value, cities);
+          const html = matchArray.map(place => {
+              const regax = new RegExp(this.value, 'gi');
+              const cityName = place.city.replace(regax, `<span class="h1">${this.value}</span>`);
+              const stataName = place.state.replace(regax, `<span class="h1">${this.value}</span>`);
+              return `
+                <li>
+                    <span class="name">${cityName}, ${stataName}</span>
+                    <span class="population">${numberWithCommsas(place.population)}</span>
+                </li>
+`
+          }).join('');
+          suggestions.innerHTML = html;
+      }
+      
+      const searchInput = document.querySelector('.search');
+      const suggestions = document.querySelector('.suggestions');
+      
+      searchInput.addEventListener('change', displayMAtches);
+      searchInput.addEventListener('keyup', displayMAtches);
+      
+      
+</script>
+      
+</body>
+</html>
